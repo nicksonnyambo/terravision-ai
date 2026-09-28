@@ -1,0 +1,8 @@
+streamlit
+torch
+torchvision
+xgboost
+opencv-python-headless
+matplotlib
+plotly
+numpy
