@@ -347,53 +347,6 @@ def main():
             fig_bar.update_layout(yaxis={'categoryorder': 'total ascending'}, height=300, margin=dict(l=0, r=0, t=30, b=0))
             st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Explainable AI & Judge Defense Tab
-    if soil_img_rgb is not None:
-        st.markdown("---")
-        st.markdown("## 🧠 Explainable AI (XAI) & Competition Judge Defense")
-        
-        xai_tab1, xai_tab2, xai_tab3 = st.tabs(["🔥 Grad-CAM Visual Heatmap", "📊 Feature Attribution (SHAP)", "📈 Model Metrics"])
-
-        with xai_tab1:
-            st.markdown("#### Grad-CAM Convolutional Focus Map")
-            st.write("Grad-CAM highlights the exact spatial pixel regions that influenced the CNN's soil type classification.")
-            
-            # Generate synthetic heatmap overlay for demo visualization
-            heatmap_raw = cv2.applyColorMap(np.uint8(255 * np.random.rand(224, 224)), cv2.COLORMAP_JET)
-            heatmap_rgb = cv2.cvtColor(heatmap_raw, cv2.COLOR_BGR2RGB)
-            overlay = cv2.addWeighted(soil_img_rgb, 0.6, heatmap_rgb, 0.4, 0)
-
-            cam_col1, cam_col2 = st.columns(2)
-            with cam_col1:
-                st.image(soil_img_rgb, caption="Original Input Soil Frame", use_container_width=True)
-            with cam_col2:
-                st.image(overlay, caption="Grad-CAM Attention Heatmap Overlay", use_container_width=True)
-
-        with xai_tab2:
-            st.markdown("#### Feature Contribution Breakdown for Top Crop Recommendation")
-            st.write("Explains how soil attributes and climate inputs shaped the XGBoost probability score.")
-
-            features = ['Soil Moisture', 'Soil Type', 'Nitrogen (N)', 'Phosphorus (P)', 'Potassium (K)', 'Rainfall', 'pH', 'Temperature']
-            importance = [0.28, 0.22, 0.18, 0.11, 0.09, 0.06, 0.04, 0.02]
-
-            fig_feat = px.bar(
-                x=importance, y=features, orientation='h',
-                labels={'x': 'Relative Feature Importance (SHAP)', 'y': 'Feature'},
-                color=importance, color_continuous_scale='Viridis'
-            )
-            fig_feat.update_layout(height=350, yaxis={'categoryorder': 'total ascending'})
-            st.plotly_chart(fig_feat, use_container_width=True)
-
-        with xai_tab3:
-            st.markdown("#### Benchmark Performance across Open Datasets")
-            m_df = pd.DataFrame({
-                'Task / Module': ['Soil Type Classification', 'Soil Moisture Estimation', 'Crop Recommender'],
-                'Dataset Source': ['Soil Classification Dataset (7 Types)', 'Mendeley Soil Moisture Dataset', 'Kaggle Crop Recommendation Dataset'],
-                'Primary Metric': ['F1-Score: 94.2%', 'Accuracy: 91.8%', 'Top-3 Accuracy: 97.5%'],
-                'Model Backbone': ['ResNet-34 + CyAUG', 'ResNet-34 (LAB Space)', 'XGBoost Classifier']
-            })
-            st.table(m_df)
-
 
 if __name__ == "__main__":
     main()
